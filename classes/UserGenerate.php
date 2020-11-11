@@ -14,11 +14,11 @@ use Ecjia\App\Connect\ConnectUser\ConnectUserAbstract;
 class UserGenerate
 {
 
-    /**
-     * 用户操作对象
-     * @var \Ecjia\App\Integrate\UserIntegrate
-     */
-    protected $integrate;
+//    /**
+//     * 用户操作对象
+//     * @var \Ecjia\App\Integrate\UserIntegrate
+//     */
+//    protected $integrate;
 
     protected $user_name;
 
@@ -38,7 +38,7 @@ class UserGenerate
             return array_get($connects, $this->connect_code);
         }
 
-        $connects[$this->connect_code] = with(new ConnectPlugin())->channel($this->connect_code);
+        $connects[$this->connect_code] = (new ConnectPlugin())->channel($this->connect_code);
         $connects[$this->connect_code]->setProfile($this->getPluginProfile());
 
         return $connects[$this->connect_code];
@@ -54,28 +54,28 @@ class UserGenerate
         return $profile;
     }
 
-    /**
-     * 创建会员整合操作对象
-     * @return \Ecjia\App\Integrate\UserIntegrate
-     */
-    protected function cretateIntegrateUser()
-    {
-        $this->integrate = ecjia_integrate::init_users();
+//    /**
+//     * 创建会员整合操作对象
+//     * @return \Ecjia\App\Integrate\UserIntegrate
+//     */
+//    protected function cretateIntegrateUser()
+//    {
+//        $this->integrate = ecjia_integrate::init_users();
+//
+//        return $this->integrate;
+//    }
 
-        return $this->integrate;
-    }
-
-    /**
-     * 获取会员整合操作对象
-     * @return \Ecjia\App\Integrate\UserIntegrate
-     */
-    public function getIntegrateUser()
-    {
-        if (is_null($this->integrate)) {
-            $this->cretateIntegrateUser();
-        }
-        return $this->integrate;
-    }
+//    /**
+//     * 获取会员整合操作对象
+//     * @return \Ecjia\App\Integrate\UserIntegrate
+//     */
+//    public function getIntegrateUser()
+//    {
+//        if (is_null($this->integrate)) {
+//            $this->cretateIntegrateUser();
+//        }
+//        return $this->integrate;
+//    }
 
     /**
      * 设置用户名
@@ -137,7 +137,7 @@ class UserGenerate
     {
         $username = $this->getUserName();
 
-        if ($this->getIntegrateUser()->checkUser($username)) {
+        if (ecjia_integrate::checkUser($username)) {
             return GenerateUserUtil::getGenerateUserNameByUserName($username);
         }
 
@@ -153,7 +153,7 @@ class UserGenerate
         $connect_handle = $this->getConnectPlugin();
         $email = $connect_handle->get_email();
 
-        if ($this->getIntegrateUser()->checkEmail($email)) {
+        if (ecjia_integrate::checkEmail($email)) {
             return GenerateUserUtil::getGenerateEmailByEmail($email);
         }
 
