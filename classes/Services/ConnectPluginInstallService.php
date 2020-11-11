@@ -46,11 +46,9 @@
 //
 namespace Ecjia\App\Connect\Services;
 
+use Ecjia\App\Connect\Installer\PluginInstaller;
 use ecjia_admin;
-use ecjia_config;
 use ecjia_plugin;
-use RC_DB;
-use RC_Plugin;
 
 /**
  * 用户帐号连接插件安装API
@@ -61,68 +59,21 @@ class ConnectPluginInstallService
 
     public function handle(& $options)
     {
-        if (isset($options['file'])) {
-            $plugin_file = $options['file'];
-            $plugin_data = RC_Plugin::get_plugin_data($plugin_file);
-
-            $plugin_file = RC_Plugin::plugin_basename($plugin_file);
-            $plugin_dir  = dirname($plugin_file);
-
-            $plugins              = ecjia_config::instance()->get_addon_config('connect_plugins', true);
-            $plugins[$plugin_dir] = $plugin_file;
-
-            ecjia_config::instance()->set_addon_config('connect_plugins', $plugins, true);
+        if (!(isset($options['file']) && isset($options['config']))) {
+            return ecjia_plugin::add_error('plugin_install_error', __('插件安装卸载必要参数不全', 'payment'));
         }
 
-        if (isset($options['config']) && !empty($plugin_data['Name'])) {
-            $format_name        = $plugin_data['Name'];
-            $format_description = $plugin_data['Description'];
+        $installer = new PluginInstaller($options['file'], $options['config']);
 
-            /* 检查输入 */
-            if (empty($format_name) || empty($options['config']['connect_code'])) {
-                return ecjia_plugin::add_error('plugin_install_error', __('帐号登录平台名称或connect_code不能为空', 'connect'));
-            }
+        $result = $installer->install();
 
-            /* 检测支付名称重复 */
-            $data = RC_DB::table('connect')->where('connect_name', $format_name)->where('connect_code', $options['config']['connect_code'])->count();
-            if ($data > 0) {
-                return ecjia_plugin::add_error('plugin_install_error', __('帐号登录平台已存在', 'connect'));
-            }
-
-            /* 取得配置信息 */
-            $connect_config = serialize($options['config']['forms']);
-
-            /* 安装，检查该支付方式是否曾经安装过 */
-            $count = RC_DB::table('connect')->where('connect_code', $options['config']['connect_code'])->count();
-            if ($count > 0) {
-                /* 该支付方式已经安装过, 将该支付方式的状态设置为 enable */
-                $data = array(
-                    'connect_name'   => $format_name,
-                    'connect_desc'   => $format_description,
-                    'connect_config' => $connect_config,
-                    'enabled'        => 1
-                );
-
-                RC_DB::table('connect')->where('connect_code', $options['config']['connect_code'])->update();
-
-            } else {
-                /* 该支付方式没有安装过, 将该支付方式的信息添加到数据库 */
-                $data = array(
-                    'connect_code'   => $options['config']['connect_code'],
-                    'connect_name'   => $format_name,
-                    'connect_desc'   => $format_description,
-                    'connect_config' => $connect_config,
-                    'enabled'        => 1,
-                );
-                RC_DB::table('connect')->insert($data);
-            }
-
-            /* 记录日志 */
-            ecjia_admin::admin_log($format_name, 'install', 'connect');
-            return true;
+        if (is_ecjia_error($result)) {
+            return $result;
         }
 
-        return false;
+        /* 记录日志 */
+        ecjia_admin::admin_log($installer->getConfigByKey('connect_code'), 'install', 'connect');
+        return true;
     }
 
 }
