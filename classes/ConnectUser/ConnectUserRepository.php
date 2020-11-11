@@ -8,52 +8,19 @@
 
 namespace Ecjia\App\Connect\ConnectUser;
 
-use Ecjia\App\Connect\ConnectUser\ConnectPlugin\ConnectUserPlugin;
+use Royalcms\Component\Repository\Repositories\AbstractRepository;
 use Ecjia\App\Connect\Models\ConnectUserModel;
 use RC_Time;
 use Royalcms\Component\Support\Collection;
 
-abstract class ConnectUserAbstract
+abstract class ConnectUserRepository extends AbstractRepository
 {
 
     /**
-     * @var ConnectUserPlugin
+     * 数据模型
+     * @var \Ecjia\App\Connect\Models\ConnectUserModel
      */
-    protected $plugin;
-
-    /**
-     * @var integer
-     */
-    protected $user_id;
-
-
-    /**
-     * ConnectUserAbstract constructor.
-     * @param ConnectUserPlugin $plugin
-     * @param null $user_id
-     */
-    public function __construct(ConnectUserPlugin $plugin, $user_id = null)
-    {
-        $this->plugin = $plugin;
-        $this->user_id = $user_id;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @param integer $user_id
-     */
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
-        return $this;
-    }
+    protected $model = 'Ecjia\App\Connect\Models\ConnectUserModel';
 
 
     /**
@@ -68,7 +35,7 @@ abstract class ConnectUserAbstract
      */
     public function createUser($user_id)
     {
-        return (new ConnectUserRepository)->create([
+        return $this->getModel()->create([
             'connect_code'     => $this->getConnectCode(),
             'connect_platform' => $this->getConnectPlatform(),
             'open_id'          => $this->getOpenId(),
