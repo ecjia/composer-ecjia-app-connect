@@ -13,6 +13,7 @@ use Ecjia\App\Connect\Services\ConnectPluginMenuService;
 use Ecjia\App\Connect\Services\ConnectPluginUninstallService;
 use Ecjia\App\Connect\Services\ConnectUpdateUserAvatarService;
 use Ecjia\App\Connect\Services\ConnectUserRemoveCleardataService;
+use ecjia_admin_log;
 use RC_Service;
 use Royalcms\Component\App\AppParentServiceProvider;
 
@@ -22,6 +23,8 @@ class ConnectServiceProvider extends  AppParentServiceProvider
     public function boot()
     {
         $this->package('ecjia/app-connect');
+
+        $this->assignAdminLogContent();
     }
     
     public function register()
@@ -44,6 +47,13 @@ class ConnectServiceProvider extends  AppParentServiceProvider
         RC_Service::addService('update_user_avatar', 'connect', ConnectUpdateUserAvatarService::class);
         RC_Service::addService('user_remove_cleardata', 'connect', ConnectUserRemoveCleardataService::class);
     }
-    
+
+    /**
+     * 添加管理员记录日志操作对象
+     */
+    protected function assignAdminLogContent()
+    {
+        ecjia_admin_log::instance()->add_object('connect', __('帐号连接', 'connect'));
+    }
     
 }
