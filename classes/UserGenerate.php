@@ -138,10 +138,10 @@ class UserGenerate
         $username = $this->getUserName();
 
         if ($this->getIntegrateUser()->checkUser($username)) {
-            return $username . rc_random(4, 'abcdefghijklmnopqrstuvwxyz0123456789');
-        } else {
-            return $username;
+            return GenerateUserUtil::getGenerateUserNameByUserName($username);
         }
+
+        return $username;
     }
 
     /**
@@ -154,10 +154,10 @@ class UserGenerate
         $email = $connect_handle->get_email();
 
         if ($this->getIntegrateUser()->checkEmail($email)) {
-            return 'a' . rc_random(2, 'abcdefghijklmnopqrstuvwxyz0123456789') . '_' . $email;
-        } else {
-            return $email;
+            return GenerateUserUtil::getGenerateEmailByEmail($email);
         }
+
+        return $email;
     }
 
     /**

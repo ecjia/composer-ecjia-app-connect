@@ -57,16 +57,16 @@ class ConnectUser extends AbstractRepository
      * 用户类型定义
      * @var string
      */
-    const USER      = 'user';
-    const MERCHANT  = 'merchant';
-    const ADMIN     = 'admin';
-    
+    const USER     = 'user';
+    const MERCHANT = 'merchant';
+    const ADMIN    = 'admin';
+
     /**
      * 数据模型
      * @var \Ecjia\App\Connect\Models\ConnectUserModel
      */
     protected $model = 'Ecjia\App\Connect\Models\ConnectUserModel';
-    
+
 
     protected $connect_code;
     protected $open_id;
@@ -78,23 +78,24 @@ class ConnectUser extends AbstractRepository
     protected $expires_in;
     protected $expires_at;
     protected $user_name;
-    
+
     /**
      * 用户操作对象
-     * @var \integrate
+     * @var \ecjia_integrate
      */
     protected $integrate;
-    
-    public function __construct($connect_code, $open_id, $user_type = self::USER) {
+
+    public function __construct($connect_code, $open_id, $user_type = self::USER)
+    {
         parent::__construct();
-        
-        $this->connect_code     = $connect_code;
-        $this->open_id          = $open_id;
-        $this->user_type        = $user_type;
-        
+
+        $this->connect_code = $connect_code;
+        $this->open_id      = $open_id;
+        $this->user_type    = $user_type;
+
         $this->buildUserInfo();
     }
-    
+
     /**
      * 获取绑定的用户信息
      */
@@ -117,7 +118,7 @@ class ConnectUser extends AbstractRepository
     {
         $this->integrate = ecjia_integrate::init_users();
     }
-    
+
     public function getIntegrateUser()
     {
         if (is_null($this->integrate)) {
@@ -125,14 +126,14 @@ class ConnectUser extends AbstractRepository
         }
         return $this->integrate;
     }
-    
+
     public function setUserName($user_name)
     {
         $this->user_name = $user_name;
-        
+
         return $this;
     }
-    
+
     public function getUserName()
     {
         if ($this->user_name) {
@@ -140,103 +141,105 @@ class ConnectUser extends AbstractRepository
         } else {
             $username = $this->getConnectPlugin()->get_username();
         }
-        
+
         return $this->filterUserName($username);
     }
-    
+
     public function getUserHeaderImg()
     {
         return $this->getConnectPlugin()->get_headerimg();
     }
-    
+
     public function getOpenId()
     {
         return $this->open_id;
     }
-    
+
     public function getConnectCode()
     {
         return $this->connect_code;
     }
-    
+
     public function getConnectPlugin()
     {
         static $connects = array();
         if (array_get($connects, $this->connect_code)) {
             return array_get($connects, $this->connect_code);
         }
-        
+
         $connects[$this->connect_code] = with(new ConnectPlugin())->channel($this->connect_code);
         $connects[$this->connect_code]->setProfile($this->getProfile());
-        
+
         return $connects[$this->connect_code];
     }
-    
+
     public function getUserId()
     {
         return $this->user_id;
     }
-    
+
     public function getUserType()
     {
         return $this->user_type;
     }
-    
-    
-    public function getAccessToken() 
+
+
+    public function getAccessToken()
     {
         return $this->access_token;
     }
-    
+
     public function getProfile()
     {
         return $this->connectPluginHandleProfile($this->profile);
     }
-    
+
     public function getCreateAtTime()
     {
         return $this->create_at;
     }
-    
+
     public function getExpiresInTime()
     {
         return $this->expires_in;
     }
-    
+
     public function getExpiresAtTime()
     {
         return $this->expires_at;
     }
-    
-    
+
+
     protected function connectPluginHandleProfile($profile)
     {
         return $profile;
     }
-    
+
     /**
      * 检查用户是否存在
      */
-    public function checkUser() {
+    public function checkUser()
+    {
         if (!empty($this->user_id)) {
             return true;
         }
         return false;
     }
-    
+
     /**
      * 检查openid是否存在于数据库记录中
      * @return \Royalcms\Component\Database\Eloquent\Model|boolean
      */
-    public function checkOpenId() {
+    public function checkOpenId()
+    {
         $where = array(
-            'open_id'       => $this->open_id,
-            'connect_code'  => $this->connect_code,
-            'user_type'     => $this->user_type
+            'open_id'      => $this->open_id,
+            'connect_code' => $this->connect_code,
+            'user_type'    => $this->user_type
         );
-        
+
         $row = $this->findWhere($where);
-        
+
         if (!$row->isEmpty()) {
             $model = $row->first();
             return $model;
@@ -244,71 +247,70 @@ class ConnectUser extends AbstractRepository
             return false;
         }
     }
-    
-    public function saveOpenId($access_token, $refresh_token, $user_profile, $expires_time) {
+
+    public function saveOpenId($access_token, $refresh_token, $user_profile, $expires_time)
+    {
         $curr_time = RC_Time::gmtime();
         if ($this->checkUser()) {
             $data = array(
-                'create_at'     => $curr_time,
-                'expires_in'    => $expires_time,
-                'expires_at'    => $curr_time + $expires_time,
+                'create_at'  => $curr_time,
+                'expires_in' => $expires_time,
+                'expires_at' => $curr_time + $expires_time,
             );
-            
+
             if ($access_token) {
                 $data['access_token'] = $access_token;
             }
-            
+
             if ($refresh_token) {
                 $data['refresh_token'] = $refresh_token;
             }
-            
+
             if ($user_profile) {
                 if (is_array($user_profile)) {
                     $user_profile = serialize($user_profile);
                 }
                 $data['profile'] = $user_profile;
             }
-            
+
             $this->newQuery();
             $result = $this->query->where('open_id', $this->open_id)
-                               ->where('connect_code', $this->connect_code)
-                               ->where('user_type', $this->user_type)
-                               ->update($data);
-        } 
-        elseif (($model = $this->checkOpenId()) !== false) {
+                ->where('connect_code', $this->connect_code)
+                ->where('user_type', $this->user_type)
+                ->update($data);
+        } elseif (($model = $this->checkOpenId()) !== false) {
             $data = array(
-                'create_at'     => $curr_time,
-                'expires_in'    => $expires_time,
-                'expires_at'    => $curr_time + $expires_time,
-                'user_type'     => $this->user_type,
+                'create_at'  => $curr_time,
+                'expires_in' => $expires_time,
+                'expires_at' => $curr_time + $expires_time,
+                'user_type'  => $this->user_type,
             );
-            
+
             if ($access_token) {
                 $data['access_token'] = $access_token;
             }
-            
+
             if ($refresh_token) {
                 $data['refresh_token'] = $refresh_token;
             }
-            
+
             if ($user_profile) {
                 if (is_array($user_profile)) {
                     $user_profile = serialize($user_profile);
                 }
                 $data['profile'] = $user_profile;
             }
-            
+
             $result = $this->update($model, $data);
-        }
-        else {
+        } else {
             if (is_array($user_profile)) {
                 $user_profile = serialize($user_profile);
             }
-            
+
             $data = array(
-                'connect_code'	=> $this->connect_code,
-                'open_id'		=> $this->open_id,
-                'access_token'	=> $access_token,
+                'connect_code'  => $this->connect_code,
+                'open_id'       => $this->open_id,
+                'access_token'  => $access_token,
                 'refresh_token' => $refresh_token,
                 'profile'       => $user_profile,
                 'create_at'     => $curr_time,
@@ -316,36 +318,37 @@ class ConnectUser extends AbstractRepository
                 'expires_at'    => $curr_time + $expires_time,
                 'user_type'     => $this->user_type,
             );
-            
+
             /**
              * 创建用户
              * 旧的handle废弃：connect_openid_exist_userid
-             * 新的handle分为三个：connect_openid_create_user_userid, 
-             *                  connect_openid_create_merchant_userid, 
+             * 新的handle分为三个：connect_openid_create_user_userid,
+             *                  connect_openid_create_merchant_userid,
              *                  connect_openid_create_admin_userid
-             */ 
+             */
             $user_id = RC_Hook::apply_filters(sprintf("connect_openid_create_%s_userid", $this->user_type), 0, $this);
             if (!empty($user_id)) {
-                $data['user_id']    = $user_id;
+                $data['user_id'] = $user_id;
             }
             $result = $this->create($data);
         }
-        
+
         if ($result) {
             $this->buildUserInfo();
         }
-        
+
         return $result;
     }
-    
+
     /**
      * 绑定用户
      * @param integer $user_id
      * @return boolean
      */
-    public function bindUser($user_id) {
+    public function bindUser($user_id)
+    {
         if (!$this->checkUser() && $user_id && ($model = $this->checkOpenId()) !== false) {
-            $data = array(
+            $data   = array(
                 'user_id' => $user_id,
             );
             $result = $this->update($model, $data);
@@ -357,7 +360,7 @@ class ConnectUser extends AbstractRepository
             return false;
         }
     }
-    
+
     /**
      * 过滤用户呢称中的非法字符
      * @param string $username
@@ -369,35 +372,38 @@ class ConnectUser extends AbstractRepository
         $username = safe_replace($username);
         return $username;
     }
-    
-    public function getGenerateUserName() {
+
+    public function getGenerateUserName()
+    {
         $username = $this->getUserName();
-        
+
         if ($this->getIntegrateUser()->checkUser($username)) {
             return $username . rc_random(4, 'abcdefghijklmnopqrstuvwxyz0123456789');
         } else {
             return $username;
         }
     }
-    
-    public function getGenerateEmail() {
+
+    public function getGenerateEmail()
+    {
         $connect_handle = $this->getConnectPlugin();
-        $email = $connect_handle->get_email();
-        
+        $email          = $connect_handle->get_email();
+
         if ($this->getIntegrateUser()->checkEmail($email)) {
             return 'a' . rc_random(2, 'abcdefghijklmnopqrstuvwxyz0123456789') . '_' . $email;
         } else {
             return $email;
         }
     }
-    
-    public function getGeneratePassword() {
+
+    public function getGeneratePassword()
+    {
         $connect_handle = $this->getConnectPlugin();
-        $password = $connect_handle->get_password();
-        
+        $password       = $connect_handle->get_password();
+
         return $password;
     }
-     
+
 }
 
 // end

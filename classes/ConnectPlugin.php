@@ -47,8 +47,8 @@
 
 namespace Ecjia\App\Connect;
 
-use Ecjia\System\Plugin\PluginModel;
-use ecjia_config;
+use Ecjia\Component\Plugin\PluginModel;
+use Ecjia\Component\Plugin\Storages\ConnectPluginStorage;
 use ecjia_error;
 
 class ConnectPlugin extends PluginModel
@@ -68,7 +68,7 @@ class ConnectPlugin extends PluginModel
      */
     public function getInstalledPlugins()
     {
-        return ecjia_config::getAddonConfig('connect_plugins', true);
+        return (new ConnectPluginStorage())->getPlugins();
     }
     
     /**

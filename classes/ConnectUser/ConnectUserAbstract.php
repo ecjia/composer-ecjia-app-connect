@@ -11,7 +11,6 @@ namespace Ecjia\App\Connect\ConnectUser;
 use Royalcms\Component\Repository\Repositories\AbstractRepository;
 use Ecjia\App\Connect\Models\ConnectUserModel;
 use RC_Time;
-use RC_Logger;
 use Royalcms\Component\Support\Collection;
 
 abstract class ConnectUserAbstract extends AbstractRepository
