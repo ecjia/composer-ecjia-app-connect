@@ -44,34 +44,33 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use Ecjia\App\Connect\UserCleanHandlers\UserConnectClear;
+use ecjia_error;
 
 /**
- * 获取连接用户信息
+ * 移除会员信息接口
+ *
  * @author royalwang
  */
-class connect_connect_user_api extends Component_Event_Api {
-    
-    /**
-     * 参数列表
-     * @param connect_code  插件代号
-     * @param open_id       第三方帐号绑定唯一值
-     * @param user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
-     * @see Component_Event_Api::call()
-     * @return \Ecjia\App\Connect\ConnectUser | ecjia_error
-     */
-    public function call(&$options) {
-        if (!array_get($options, 'connect_code') || !array_get($options, 'open_id')) {
+class ConnectUserRemoveCleardataService
+{
+
+    public function handle(& $options)
+    {
+
+        $user_id = array_get($options, 'user_id');
+
+        if (empty($user_id)) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
         }
-        
-        $user_type = array_get($options, 'user_type', 'user');
-        
-        $connect_code   = $options['connect_code'];
-        $open_id        = $options['open_id'];
-        $connect_user   = new \Ecjia\App\Connect\ConnectUser\ConnectUser($connect_code, $open_id);
-        return $connect_user;
+
+        return [
+            new UserConnectClear($user_id),
+        ];
     }
+
 }
 
 // end

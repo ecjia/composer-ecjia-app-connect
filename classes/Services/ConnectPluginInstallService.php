@@ -44,48 +44,87 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use ecjia_admin;
+use ecjia_config;
+use ecjia_plugin;
+use RC_DB;
+use RC_Plugin;
 
 /**
- * ecjia账号同步登录，添加关联账号信息
- * @author zrl
+ * 用户帐号连接插件安装API
+ * @author royalwang
  */
-class connect_ecjia_syncappuser_add_api extends Component_Event_Api {
-    
-    /**
-     * 参数列表
-     * @param connect_code  关联账号code    		必传
-     * @param user_id  		会员id  				必传
-     * @param open_id       第三方帐号绑定唯一值   		必传
-     * @param is_admin      是否是管理员，默认否0   	
-     * @param access_token  access_token		必传
-     * @param refresh_token refresh_token		必传
-     * @param user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
-     * @return true | ecjia_error
-     */
-    public function call(&$options) {
-        if (!array_get($options, 'connect_code') 
-        	|| !array_get($options, 'open_id')
-        	|| !array_get($options, 'user_id')
-        	|| !array_get($options, 'access_token')
-        	|| !array_get($options, 'refresh_token')
-        ) {
-            return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
-        }
-        
-        $connect_code   = $options['connect_code'];
-        $user_id		= $options['user_id'];
-        $is_admin		= !empty($options['user_id']) ? $options['user_id'] : 0;
-        $user_type 		= array_get($options, 'user_type', 'user');
-        $open_id        = $options['open_id'];
-        $access_token	= $options['access_token'];
-        $refresh_token  = $options['refresh_token'];
+class ConnectPluginInstallService
+{
 
-        $EcjiaSyncAppUser = new Ecjia\App\Connect\Plugins\EcjiaSyncAppUser($open_id, $user_type);
-        $EcjiaSyncAppUser->setUserId($user_id)->addEcjiaAppUser($access_token, $refresh_token);
-        
-        return true;
+    public function handle(& $options)
+    {
+        if (isset($options['file'])) {
+            $plugin_file = $options['file'];
+            $plugin_data = RC_Plugin::get_plugin_data($plugin_file);
+
+            $plugin_file = RC_Plugin::plugin_basename($plugin_file);
+            $plugin_dir  = dirname($plugin_file);
+
+            $plugins              = ecjia_config::instance()->get_addon_config('connect_plugins', true);
+            $plugins[$plugin_dir] = $plugin_file;
+
+            ecjia_config::instance()->set_addon_config('connect_plugins', $plugins, true);
+        }
+
+        if (isset($options['config']) && !empty($plugin_data['Name'])) {
+            $format_name        = $plugin_data['Name'];
+            $format_description = $plugin_data['Description'];
+
+            /* 检查输入 */
+            if (empty($format_name) || empty($options['config']['connect_code'])) {
+                return ecjia_plugin::add_error('plugin_install_error', __('帐号登录平台名称或connect_code不能为空', 'connect'));
+            }
+
+            /* 检测支付名称重复 */
+            $data = RC_DB::table('connect')->where('connect_name', $format_name)->where('connect_code', $options['config']['connect_code'])->count();
+            if ($data > 0) {
+                return ecjia_plugin::add_error('plugin_install_error', __('帐号登录平台已存在', 'connect'));
+            }
+
+            /* 取得配置信息 */
+            $connect_config = serialize($options['config']['forms']);
+
+            /* 安装，检查该支付方式是否曾经安装过 */
+            $count = RC_DB::table('connect')->where('connect_code', $options['config']['connect_code'])->count();
+            if ($count > 0) {
+                /* 该支付方式已经安装过, 将该支付方式的状态设置为 enable */
+                $data = array(
+                    'connect_name'   => $format_name,
+                    'connect_desc'   => $format_description,
+                    'connect_config' => $connect_config,
+                    'enabled'        => 1
+                );
+
+                RC_DB::table('connect')->where('connect_code', $options['config']['connect_code'])->update();
+
+            } else {
+                /* 该支付方式没有安装过, 将该支付方式的信息添加到数据库 */
+                $data = array(
+                    'connect_code'   => $options['config']['connect_code'],
+                    'connect_name'   => $format_name,
+                    'connect_desc'   => $format_description,
+                    'connect_config' => $connect_config,
+                    'enabled'        => 1,
+                );
+                RC_DB::table('connect')->insert($data);
+            }
+
+            /* 记录日志 */
+            ecjia_admin::admin_log($format_name, 'install', 'connect');
+            return true;
+        }
+
+        return false;
     }
+
 }
 
 // end

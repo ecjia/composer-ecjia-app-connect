@@ -44,14 +44,18 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use ecjia_error;
+use RC_Api;
+use RC_DB;
 
 /**
  * openid是否存在及是否关联用户
  * TODO 目前只适合wechat插件使用
  * @author zrl
  */
-class connect_connect_user_bind_api extends Component_Event_Api
+class ConnectConnectUserBindService
 {
 
     /**
@@ -64,7 +68,7 @@ class connect_connect_user_bind_api extends Component_Event_Api
      * @param string $user_type 用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
      * @see Component_Event_Api::call()
      */
-    public function call(&$options)
+    public function handle(&$options)
     {
         if (!array_get($options, 'connect_code') || !array_get($options, 'open_id') || !array_get($options, 'profile')) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
@@ -77,10 +81,10 @@ class connect_connect_user_bind_api extends Component_Event_Api
         $open_id          = $options['open_id'];
         $union_id         = $options['union_id'];
         $mobile           = $options['mobile'];
-        $user_id		  = $options['user_id'];
-        
-        if(empty($connect_platform)) {
-            $connect_handle = with(new \Ecjia\App\Connect\ConnectPlugin)->channel($connect_code);
+        $user_id          = $options['user_id'];
+
+        if (empty($connect_platform)) {
+            $connect_handle   = with(new \Ecjia\App\Connect\ConnectPlugin)->channel($connect_code);
             $connect_platform = $connect_handle->loadConfig('connect_platform');
         }
 
@@ -89,18 +93,18 @@ class connect_connect_user_bind_api extends Component_Event_Api
         $connect_user->setUnionId($union_id);
 
         //通过union_id,open_id同步已绑定的用户信息
-        if($union_id) {
+        if ($union_id) {
             $bind_result = $connect_user->bindUserByUnionId();
         } else {
-            $bind_result =  $connect_user->bindUserByOpenId();
+            $bind_result = $connect_user->bindUserByOpenId();
         }
-        
+
         //判断是否绑定用户
         if ($connect_user->checkUser()) {
             $user_id = $connect_user->getUserId();
             //更新connect_user表profile
             if (!empty($profile) && !empty($bind_result->id)) {
-            	RC_DB::table('connect_user')->where('id', $bind_result->id)->update(['profile' => serialize($profile)]);
+                RC_DB::table('connect_user')->where('id', $bind_result->id)->update(['profile' => serialize($profile)]);
             }
             //获取远程头像，更新用户头像
             if (!empty($profile['headimgurl']) && !empty($user_id)) {
@@ -128,14 +132,14 @@ class connect_connect_user_bind_api extends Component_Event_Api
          */
 //        ecjia_log_debug('connect_user', (array)$connect_user);
 
-        if (! empty($mobile) || !empty($user_id)) {
+        if (!empty($mobile) || !empty($user_id)) {
 
-        	if (! empty($mobile)) {
-        		$userinfo = RC_Api::api('user', 'get_local_user', array('mobile' => $mobile));
-        	} elseif (!empty($user_id)) {
-        		$userinfo = RC_Api::api('user', 'get_local_user', array('user_id' => $user_id));
-        	}
-            
+            if (!empty($mobile)) {
+                $userinfo = RC_Api::api('user', 'get_local_user', array('mobile' => $mobile));
+            } elseif (!empty($user_id)) {
+                $userinfo = RC_Api::api('user', 'get_local_user', array('user_id' => $user_id));
+            }
+
             if (is_ecjia_error($userinfo)) {
 
                 /*创建用户*/

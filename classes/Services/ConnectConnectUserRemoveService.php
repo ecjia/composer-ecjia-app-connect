@@ -44,23 +44,34 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use ecjia_error;
+use RC_DB;
 
 /**
- * 后台connect模块权限 
+ * 删除连接用户信息
  * @author royalwang
  */
-class connect_admin_purview_api extends Component_Event_Api {
-    
-    public function call(&$options) {
-        $purviews = array(
-            array('action_name' => __('账号连接', 'connect'), 'action_code' => 'connect_users_manage', 'relevance' => ''),
-        	array('action_name' => __('编辑账号连接', 'connect'), 	 'action_code' => 'connect_users_update', 'relevance' => ''),
-        	array('action_name' => __('启用账号连接', 'connect'),  'action_code' => 'connect_users_enable', 'relevance' => ''),
-        	array('action_name' => __('禁用账号连接', 'connect'), 'action_code' => 'connect_users_disable', 'relevance' => ''),
-        );
-        
-        return $purviews;
+class ConnectConnectUserRemoveService
+{
+
+    /**
+     * 参数说明
+     * @param integer user_id       用户ID
+     * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
+     * @return boolean | ecjia_error
+     */
+    public function handle(& $options)
+    {
+        if (!array_get($options, 'user_id')) {
+            return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
+        }
+
+        $user_ids  = is_array($options['user_id']) ? $options['user_id'] : array($options['user_id']);
+        $user_type = array_get($options, 'user_type', 'user');
+
+        return RC_DB::table('connect_user')->whereIn('user_id', $user_ids)->where('user_type', $user_type)->delete();
     }
 }
 

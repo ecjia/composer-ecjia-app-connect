@@ -44,30 +44,23 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use ecjia_admin;
+use RC_Uri;
 
 /**
- * 删除连接用户信息
+ * 后台菜单API
  * @author royalwang
  */
-class connect_connect_user_remove_api extends Component_Event_Api {
-    
-    /**
-     * 参数说明
-     * @param user_id       用户ID
-     * @param user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
-     * @see Component_Event_Api::call()
-     * @return boolean | ecjia_error
-     */
-    public function call(&$options) {
-        if (!array_get($options, 'user_id')) {
-            return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
-        }
-        
-        $user_ids = is_array($options['user_id']) ? $options['user_id'] : array($options['user_id']);
-        $user_type = array_get($options, 'user_type', 'user');
-        
-        return RC_DB::table('connect_user')->whereIn('user_id', $user_ids)->where('user_type', $user_type)->delete();
+class ConnectPluginMenuService
+{
+
+    public function handle(& $options)
+    {
+        $menus = ecjia_admin::make_admin_menu('connect_list', __('账号连接', 'connect'), RC_Uri::url('connect/admin_plugin/init'), 1)->add_purview('connect_users_manage')->add_base('connect');
+
+        return $menus;
     }
 }
 

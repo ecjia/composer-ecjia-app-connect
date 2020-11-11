@@ -44,34 +44,52 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use Ecjia\App\Connect\Plugins\EcjiaSyncAppUser;
+use ecjia_error;
 
 /**
- * 获取连接用户信息
- * @author royalwang
+ * ecjia账号同步登录，添加关联账号信息
+ * @author zrl
  */
-class connect_connect_user_info_api extends Component_Event_Api {
-    
+class ConnectEcjiaSyncappuserAddService
+{
+
     /**
-     * 参数说明
-     * @param user_id       用户ID
-     * @param user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
-     * @see Component_Event_Api::call()
-     * @return array | ecjia_error
+     * 参数列表
+     * @param string connect_code  关联账号code            必传
+     * @param integer user_id        会员id                必传
+     * @param string open_id       第三方帐号绑定唯一值        必传
+     * @param integer is_admin      是否是管理员，默认否0
+     * @param string access_token  access_token        必传
+     * @param string refresh_token refresh_token        必传
+     * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
+     * @return true | ecjia_error
      */
-    public function call(&$options) {
-        if (!array_get($options, 'user_id')) {
+    public function handle(& $options)
+    {
+        if (!array_get($options, 'connect_code')
+            || !array_get($options, 'open_id')
+            || !array_get($options, 'user_id')
+            || !array_get($options, 'access_token')
+            || !array_get($options, 'refresh_token')
+        ) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
         }
-        
-        $user_type = array_get($options, 'user_type', 'user');
-        
-        $user_id = $options['user_id'];
-        $user = RC_DB::table('connect_user')->where('user_id', $user_id)->orderBy('id', 'desc')->first();
-        if ($user) {
-            $user['profile'] = unserialize($user['profile']);
-        }
-        return $user;
+
+        $connect_code  = $options['connect_code'];
+        $user_id       = $options['user_id'];
+        $is_admin      = !empty($options['user_id']) ? $options['user_id'] : 0;
+        $user_type     = array_get($options, 'user_type', 'user');
+        $open_id       = $options['open_id'];
+        $access_token  = $options['access_token'];
+        $refresh_token = $options['refresh_token'];
+
+        $EcjiaSyncAppUser = new EcjiaSyncAppUser($open_id, $user_type);
+        $EcjiaSyncAppUser->setUserId($user_id)->addEcjiaAppUser($access_token, $refresh_token);
+
+        return true;
     }
 }
 

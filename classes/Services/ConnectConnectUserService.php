@@ -44,46 +44,39 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use Ecjia\App\Connect\ConnectUser\ConnectUser;
+use ecjia_error;
 
 /**
- * 用户帐号连接插件卸载API
+ * 获取连接用户信息
  * @author royalwang
  */
-class connect_plugin_uninstall_api extends Component_Event_Api {
-	
-	public function call(&$options) {
-	    if (isset($options['file'])) {
-	        $plugin_file = $options['file'];
-	        $plugin_data = RC_Plugin::get_plugin_data($plugin_file);
-	        
-	        $plugin_file = RC_Plugin::plugin_basename( $plugin_file );
-	        $plugin_dir  = dirname($plugin_file);
-	         
-	        $plugins     = ecjia_config::instance()->get_addon_config('connect_plugins', true);	        
-	        unset($plugins[$plugin_dir]);
-	         
-	        ecjia_config::instance()->set_addon_config('connect_plugins', $plugins, true);
-	    }
-	    
-	    if (isset($options['config']) && !empty($plugin_data['Name'])) {
-	        $format_name = $plugin_data['Name'];
-	         
-	        /* 检查输入 */
-	        if (empty($format_name) || empty($options['config']['connect_code'])) {
-	            return ecjia_plugin::add_error('plugin_uninstall_error', __('帐号登录平台名称不能为空', 'connect'));
-	        }
-	         
-	        /* 从数据库中删除支付方式 */
-	         RC_DB::table('connect')->where('connect_code', $options['config']['connect_code'])->delete();
-	        /* 记录日志 */
-	        ecjia_admin::admin_log($format_name, 'uninstall', 'connect');
-	         
-	        return true;
-	    }
-	     
-	    return false;
-	}
+class ConnectConnectUserService
+{
+    /**
+     * 参数列表
+     * @param string connect_code  插件代号
+     * @param string open_id       第三方帐号绑定唯一值
+     * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
+     * @see Component_Event_Api::call()
+     * @return \Ecjia\App\Connect\ConnectUser\ConnectUser | ecjia_error
+     */
+    public function handle(& $options)
+    {
+        if (!array_get($options, 'connect_code') || !array_get($options, 'open_id')) {
+            return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
+        }
+
+        $user_type = array_get($options, 'user_type', 'user');
+
+        $connect_code   = $options['connect_code'];
+        $open_id        = $options['open_id'];
+        $connect_user   = new ConnectUser($connect_code, $open_id);
+        return $connect_user;
+    }
+
 }
 
 // end

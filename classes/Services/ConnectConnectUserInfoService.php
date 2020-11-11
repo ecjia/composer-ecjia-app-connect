@@ -44,19 +44,39 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Connect\Services;
+
+use ecjia_error;
+use RC_DB;
 
 /**
- * 后台菜单API
+ * 获取连接用户信息
  * @author royalwang
  */
-class connect_plugin_menu_api extends Component_Event_Api {
-	
-	public function call(&$options) {	
-		$menus = ecjia_admin::make_admin_menu('connect_list', __('账号连接', 'connect'), RC_Uri::url('connect/admin_plugin/init'), 1)->add_purview('connect_users_manage')->add_base('connect');
+class ConnectConnectUserInfoService
+{
 
-		return $menus;
-	}
+    /**
+     * 参数说明
+     * @param integer user_id       用户ID
+     * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
+     * @return array|ecjia_error|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|object
+     */
+    public function handle(& $options)
+    {
+        if (!array_get($options, 'user_id')) {
+            return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));
+        }
+
+        $user_type = array_get($options, 'user_type', 'user');
+
+        $user_id = $options['user_id'];
+        $user    = RC_DB::table('connect_user')->where('user_id', $user_id)->orderBy('id', 'desc')->first();
+        if ($user) {
+            $user['profile'] = unserialize($user['profile']);
+        }
+        return $user;
+    }
 }
 
 // end
