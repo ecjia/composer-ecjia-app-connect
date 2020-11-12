@@ -73,39 +73,6 @@ abstract class ConnectAbstract extends AbstractPlugin
         return $this->loadConfig('connect_platform');
     }
 
-
-//    /**
-//     * 生成默认用户名
-//     * @return string
-//     */
-//    public function default_generate_username()
-//    {
-//        /* 不是用户注册，则创建随机用户名*/
-//        return 'a' . rc_random(10, 'abcdefghijklmnopqrstuvwxyz0123456789');
-//    }
-//
-//    /**
-//     * 生成默认邮箱
-//     * @return string
-//     */
-//    public function default_generate_email()
-//    {
-//        /* 不是用户注册，则创建随机用户名*/
-//        $string = 'a' . rc_random(10, 'abcdefghijklmnopqrstuvwxyz0123456789');
-//        $email  = $string . '@163.com';
-//        return $email;
-//    }
-//
-//    /**
-//     * 生成默认密码
-//     * @return string
-//     */
-//    public function default_generate_password()
-//    {
-//        $password = md5(rc_random(9, 'abcdefghijklmnopqrstuvwxyz0123456789'));
-//        return $password;
-//    }
-
     /**
      * 设置用户信息
      * @param array $profile

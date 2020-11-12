@@ -342,4 +342,14 @@ abstract class ConnectUserAbstract
         return  $profile ?: array();
     }
 
+    /**
+     * @param $method
+     * @param $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->plugin->$method(...$parameters);
+    }
+
 }

@@ -4,40 +4,20 @@
 namespace Ecjia\App\Connect\Plugins;
 
 
-use Ecjia\App\Connect\ConnectAbstract;
+use Ecjia\App\Connect\ConnectUser\ConnectUser;
 
-class ConnectDscmallUser extends ConnectAbstract
+class ConnectDscmallUser extends ConnectUser
 {
 
     /**
-     * 生成授权网址
+     * ConnectDscmallUser constructor.
+     * @param integer $open_id 大商创会员ID user_id
      */
-    public function authorize_url()
+    public function __construct($open_id)
     {
-
+        parent::__construct('uc_dscmall', $open_id);
     }
 
-    /**
-     * 生成回调地址
-     *
-     */
-    public function callback_url()
-    {
 
-    }
-
-    /**
-     * 登录成功后回调处理
-     * @param string $user_type 用户类型
-     *          ConnectUser::USER,
-     *          ConnectUser::MERCHANT,
-     *          ConnectUser::ADMIN
-     * @return \Ecjia\App\Connect\ConnectUser
-     * @see \Ecjia\App\Connect\ConnectAbstract::callback()
-     */
-    public function callback($user_type = 'user')
-    {
-
-    }
 
 }
