@@ -26,6 +26,11 @@ abstract class ConnectUserAbstract
      */
     protected $user_id;
 
+    /**
+     * @var ConnectUserRepository
+     */
+    protected $repository;
+
 
     /**
      * ConnectUserAbstract constructor.
@@ -36,6 +41,7 @@ abstract class ConnectUserAbstract
     {
         $this->plugin = $plugin;
         $this->user_id = $user_id;
+        $this->repository = new ConnectUserRepository();
     }
 
     /**
@@ -55,6 +61,23 @@ abstract class ConnectUserAbstract
         return $this;
     }
 
+    /**
+     * @return ConnectUserRepository
+     */
+    public function getRepository(): ConnectUserRepository
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @param ConnectUserRepository $repository
+     * @return ConnectUserAbstract
+     */
+    public function setRepository(ConnectUserRepository $repository): ConnectUserAbstract
+    {
+        $this->repository = $repository;
+        return $this;
+    }
 
     /**
      * 创建绑定用户
@@ -64,16 +87,16 @@ abstract class ConnectUserAbstract
      * 如果记录已经存在，则直接绑定用户
      *
      * @param $user_id
-     * @return \Ecjia\App\Connect\Models\ConnectUserModel
+     * @return \Ecjia\App\Connect\Models\ConnectUserModel|bool
      */
     public function createUser($user_id)
     {
-        return (new ConnectUserRepository)->create([
-            'connect_code'     => $this->getConnectCode(),
-            'connect_platform' => $this->getConnectPlatform(),
-            'open_id'          => $this->getOpenId(),
-            'union_id'         => $this->getUnionId(),
-            'user_type'        => $this->getUserType(),
+        return $this->repository->create([
+            'connect_code'     => $this->plugin->getConnectCode(),
+            'connect_platform' => $this->plugin->getConnectPlatform(),
+            'open_id'          => $this->plugin->getOpenId(),
+            'union_id'         => $this->plugin->getUnionId(),
+            'user_type'        => $this->plugin->getUserType(),
             'user_id'          => $user_id,
             'create_at'        => RC_Time::gmtime(),
         ]);
@@ -85,10 +108,10 @@ abstract class ConnectUserAbstract
      */
     public function getUserModel()
     {
-        return $this->getModel()
-            ->where('open_id', $this->open_id)
-            ->where('connect_code', $this->connect_code)
-            ->where('user_type', $this->user_type)
+        return $this->repository->getModel()
+            ->where('open_id', $this->plugin->getOpenId())
+            ->where('connect_code', $this->plugin->getConnectCode())
+            ->where('user_type', $this->plugin->getUserType())
             ->first();
     }
 
@@ -98,10 +121,10 @@ abstract class ConnectUserAbstract
      */
     public function getUserModelByUserId()
     {
-        return $this->getModel()
+        return $this->repository->getModel()
             ->where('user_id', $this->getUserId())
-            ->where('connect_code', $this->getConnectCode())
-            ->where('user_type', $this->getUserType())
+            ->where('connect_code', $this->plugin->getConnectCode())
+            ->where('user_type', $this->plugin->getUserType())
             ->first();
     }
 
@@ -111,11 +134,11 @@ abstract class ConnectUserAbstract
      */
     public function getUserModelCollectionByUnionId()
     {
-        if ($this->union_id) {
-            return $this->getModel()
-                ->where('union_id', $this->union_id)
-                ->where('connect_platform', $this->connect_platform)
-                ->where('user_type', $this->user_type)
+        if ($this->plugin->getUnionId()) {
+            return $this->repository->getModel()
+                ->where('union_id', $this->plugin->getUnionId())
+                ->where('connect_platform', $this->plugin->getConnectPlatform())
+                ->where('user_type', $this->plugin->getUserType())
                 ->get();
         }
 
@@ -128,10 +151,10 @@ abstract class ConnectUserAbstract
      */
     public function getUserModelCollectionByOpenId()
     {
-        return $this->getModel()
-            ->where('open_id', $this->open_id)
-            ->where('connect_platform', $this->connect_platform)
-            ->where('user_type', $this->user_type)
+        return $this->repository->getModel()
+            ->where('open_id', $this->plugin->getOpenId())
+            ->where('connect_platform', $this->plugin->getConnectPlatform())
+            ->where('user_type', $this->plugin->getUserType())
             ->get();
     }
 
@@ -141,9 +164,9 @@ abstract class ConnectUserAbstract
      */
     public function getUserModelCollectionByUserId()
     {
-        return $this->getModel()
-            ->where('user_id', $this->user_id)
-            ->where('user_type', $this->user_type)
+        return $this->repository->getModel()
+            ->where('user_id', $this->getUserId())
+            ->where('user_type', $this->plugin->getUserType())
             ->get();
     }
 
@@ -166,7 +189,7 @@ abstract class ConnectUserAbstract
 
         if (empty($user_model->user_id)) {
             $user_model->user_id = $this->getUserId();
-            $user_model->user_type = $this->getUserType();
+            $user_model->user_type = $this->plugin->getUserType();
         }
 
         if ($access_token) {
@@ -232,7 +255,7 @@ abstract class ConnectUserAbstract
             }
 
             $model->user_id   = $this->getUserId();
-            $model->user_type = $this->getUserType();
+            $model->user_type = $this->plugin->getUserType();
             return $model->save();
         } else {
             return false;

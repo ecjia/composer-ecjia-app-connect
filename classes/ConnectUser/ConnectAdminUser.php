@@ -9,9 +9,11 @@
 namespace Ecjia\App\Connect\ConnectUser;
 
 
+use Ecjia\App\Connect\ConnectUser\ConnectPlugin\ConnectUserPlugin;
+
 class ConnectAdminUser extends ConnectUser
 {
 
-    protected $user_type = self::ADMIN;
+    protected $user_type = ConnectUserPlugin::ADMIN;
 
 }

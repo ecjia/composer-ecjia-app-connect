@@ -43,7 +43,7 @@ class ConnectUserPlugin
      * @param string $connect_code
      * @param string $connect_platform
      */
-    public function __construct(string $connect_code, string $connect_platform)
+    public function __construct(string $connect_code, ?string $connect_platform = null)
     {
         $this->connect_code     = $connect_code;
         $this->connect_platform = $connect_platform;

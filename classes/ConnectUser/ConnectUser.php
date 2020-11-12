@@ -46,10 +46,13 @@
 //
 namespace Ecjia\App\Connect\ConnectUser;
 
-use Ecjia\App\Connect\UserGenerate;
+use Ecjia\App\Connect\ConnectUser\ConnectPlugin\ConnectUserPlugin;
+use Ecjia\App\Connect\UserGenerateTrait;
 
 class ConnectUser extends ConnectUserAbstract
 {
+    use UserGenerateTrait;
+
     /**
      * 访问用户信息的token
      * @var
@@ -88,18 +91,19 @@ class ConnectUser extends ConnectUserAbstract
 
     /**
      * 用户操作对象
-     * @var \integrate
+     * @var \ecjia_integrate
      */
     protected $integrate;
 
-    protected $user_type = self::USER;
+    protected $user_type = ConnectUserPlugin::USER;
 
     public function __construct($connect_code, $open_id)
     {
-        parent::__construct($open_id, $this->user_type);
+        $plugin = new ConnectUserPlugin($connect_code);
+        $plugin->setOpenId($open_id);
+        $plugin->setUserType($this->user_type);
 
-        $this->connect_code = $connect_code;
-        $this->open_id      = $open_id;
+        parent::__construct($plugin);
 
         $this->buildUserInfo();
     }
