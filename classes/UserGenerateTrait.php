@@ -8,10 +8,11 @@
 
 namespace Ecjia\App\Connect;
 
+use ecjia_connect;
 use ecjia_integrate;
-use Ecjia\App\Connect\ConnectUser\ConnectUserAbstract;
+use RC_Format;
 
-class UserGenerate
+trait UserGenerateTrait
 {
 
 //    /**
@@ -20,33 +21,34 @@ class UserGenerate
 //     */
 //    protected $integrate;
 
+    /**
+     * 用户名
+     * @var string
+     */
     protected $user_name;
 
-    protected $connect_user;
-    protected $connect_code;
+//
+//    protected $connect_user;
+//    protected $connect_code;
 
-    public function __construct(ConnectUserAbstract $connect_user)
-    {
-        $this->connect_user = $connect_user;
-        $this->connect_code = $connect_user->getConnectCode();
-    }
+//    public function __construct(ConnectUserAbstract $connect_user)
+//    {
+//        $this->connect_code = $connect_user->getConnectCode();
+//    }
 
+    /**
+     * @return ConnectAbstract
+     */
     public function getConnectPlugin()
     {
-        static $connects = array();
-        if (array_get($connects, $this->connect_code)) {
-            return array_get($connects, $this->connect_code);
-        }
-
-        $connects[$this->connect_code] = (new ConnectPlugin())->channel($this->connect_code);
-        $connects[$this->connect_code]->setProfile($this->getPluginProfile());
-
-        return $connects[$this->connect_code];
+        $handler = ecjia_connect::channel($this->plugin->getConnectCode());
+        $handler->setProfile($this->getPluginProfile());
+        return $handler;
     }
 
     public function getPluginProfile()
     {
-        return $this->connectPluginHandleProfile($this->connect_user->getConnectProfile());
+        return $this->connectPluginHandleProfile($this->getConnectProfile());
     }
 
     protected function connectPluginHandleProfile($profile)
@@ -85,7 +87,6 @@ class UserGenerate
     public function setUserName($user_name)
     {
         $this->user_name = $user_name;
-
         return $this;
     }
 
@@ -95,14 +96,11 @@ class UserGenerate
      */
     public function getUserName()
     {
-        if ($this->user_name) {
+        if (is_null($this->user_name)) {
             $username = $this->user_name;
         } else {
             $username = $this->getConnectPlugin()->get_username();
         }
-
-        //ecjia_log_debug('ConnectPlugin getConnectProfile', $this->connect_user->getConnectProfile());
-        //ecjia_log_debug('ConnectPlugin getUserName', (array)$username);
 
         return $this->filterUserName($username);
     }
@@ -121,9 +119,9 @@ class UserGenerate
      * @param string $username
      * @return string
      */
-    public function filterUserName($username)
+    protected function filterUserName($username)
     {
-        $username = \RC_Format::filterEmoji($username);
+        $username = RC_Format::filterEmoji($username);
         $username = safe_replace($username);
         return $username;
     }
@@ -150,8 +148,8 @@ class UserGenerate
      */
     public function getGenerateEmail()
     {
-        $connect_handle = $this->getConnectPlugin();
-        $email = $connect_handle->get_email();
+        $handler = $this->getConnectPlugin();
+        $email = $handler->get_email();
 
         if (ecjia_integrate::checkEmail($email)) {
             return GenerateUserUtil::getGenerateEmailByEmail($email);
@@ -162,12 +160,12 @@ class UserGenerate
 
     /**
      * 生成密码
-     * @return mixed
+     * @return string
      */
     public function getGeneratePassword()
     {
-        $connect_handle = $this->getConnectPlugin();
-        $password = $connect_handle->get_password();
+        $handler = $this->getConnectPlugin();
+        $password = $handler->get_password();
 
         return $password;
     }
