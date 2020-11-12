@@ -36,8 +36,8 @@ class AdminHookSubscriber
     public function subscribe(Dispatcher $events)
     {
 
-        RC_Hook::add_filter('user_admin_menu_api', array('connect_admin_plugin', 'connect_admin_menu_api') );
-        RC_Hook::add_action('ecjia_maintain_command_filter', array('connect_admin_plugin', 'add_maintain_command'));
+        RC_Hook::add_filter('user_admin_menu_api', array(__CLASS__, 'connect_admin_menu_api') );
+        RC_Hook::add_action('ecjia_maintain_command_filter', array(__CLASS__, 'add_maintain_command'));
 
     }
 
