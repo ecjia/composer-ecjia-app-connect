@@ -89,12 +89,6 @@ class ConnectUser extends ConnectUserAbstract
      */
     protected $expires_at;
 
-    /**
-     * 用户操作对象
-     * @var \ecjia_integrate
-     */
-    protected $integrate;
-
     protected $user_type = ConnectUserPlugin::USER;
 
     /**
@@ -125,9 +119,9 @@ class ConnectUser extends ConnectUserAbstract
         }
 
         if ($model) {
+            $this->plugin->setConnectPlatform($model->connect_platform);
+            $this->plugin->setUnionId($model->union_id);
             $this->user_id          = $model->user_id;
-            $this->connect_platform = $model->connect_platform;
-            $this->union_id         = $model->union_id;
             $this->access_token     = $model->access_token;
             $this->refresh_token    = $model->refresh_token;
             $this->profile          = unserialize($model->profile) ? unserialize($model->profile) : array();
@@ -231,11 +225,22 @@ class ConnectUser extends ConnectUserAbstract
 
     /**
      * 获取用户的profile
-     * @return mixed
+     * @return array
      */
     public function getConnectProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * 获取用户的profile
+     * @param $key
+     * @param null|string $default
+     * @return array
+     */
+    public function getConnectProfileByKey($key, $default = null)
+    {
+        return array_get($this->profile, $key, $default);
     }
 
 }
