@@ -52,7 +52,7 @@ class ConnectUserPlugin
     /**
      * @return string
      */
-    public function getConnectCode(): string
+    public function getConnectCode()
     {
         return $this->connect_code;
     }
@@ -61,7 +61,7 @@ class ConnectUserPlugin
      * @param string $connect_code
      * @return ConnectUserPlugin
      */
-    public function setConnectCode(string $connect_code): ConnectUserPlugin
+    public function setConnectCode(string $connect_code)
     {
         $this->connect_code = $connect_code;
         return $this;
@@ -70,7 +70,7 @@ class ConnectUserPlugin
     /**
      * @return string
      */
-    public function getConnectPlatform(): string
+    public function getConnectPlatform()
     {
         return $this->connect_platform;
     }
@@ -79,7 +79,7 @@ class ConnectUserPlugin
      * @param string $connect_platform
      * @return ConnectUserPlugin
      */
-    public function setConnectPlatform(?string $connect_platform): ConnectUserPlugin
+    public function setConnectPlatform(?string $connect_platform)
     {
         $this->connect_platform = $connect_platform;
         return $this;
@@ -88,7 +88,7 @@ class ConnectUserPlugin
     /**
      * @return string
      */
-    public function getOpenId(): string
+    public function getOpenId()
     {
         return $this->open_id;
     }
@@ -97,7 +97,7 @@ class ConnectUserPlugin
      * @param string $open_id
      * @return ConnectUserPlugin
      */
-    public function setOpenId(?string $open_id): ConnectUserPlugin
+    public function setOpenId(?string $open_id)
     {
         $this->open_id = $open_id;
         return $this;
@@ -106,7 +106,7 @@ class ConnectUserPlugin
     /**
      * @return string
      */
-    public function getUnionId(): string
+    public function getUnionId()
     {
         return $this->union_id;
     }
@@ -115,7 +115,7 @@ class ConnectUserPlugin
      * @param string $union_id
      * @return ConnectUserPlugin
      */
-    public function setUnionId(?string $union_id): ConnectUserPlugin
+    public function setUnionId(?string $union_id)
     {
         $this->union_id = $union_id;
         return $this;
@@ -124,7 +124,7 @@ class ConnectUserPlugin
     /**
      * @return string
      */
-    public function getUserType(): string
+    public function getUserType()
     {
         return $this->user_type;
     }
@@ -133,7 +133,7 @@ class ConnectUserPlugin
      * @param string $user_type
      * @return ConnectUserPlugin
      */
-    public function setUserType(?string $user_type): ConnectUserPlugin
+    public function setUserType(?string $user_type)
     {
         $this->user_type = $user_type;
         return $this;
