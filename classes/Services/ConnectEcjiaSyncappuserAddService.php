@@ -86,8 +86,8 @@ class ConnectEcjiaSyncappuserAddService
         $access_token  = $options['access_token'];
         $refresh_token = $options['refresh_token'];
 
-        $EcjiaSyncAppUser = new EcjiaSyncAppUser($open_id, $user_type);
-        $EcjiaSyncAppUser->setUserId($user_id)->addEcjiaAppUser($access_token, $refresh_token);
+//        $EcjiaSyncAppUser = new EcjiaSyncAppUser($open_id, $user_type);
+//        $EcjiaSyncAppUser->setUserId($user_id)->addEcjiaAppUser($access_token, $refresh_token);
 
         return true;
     }
