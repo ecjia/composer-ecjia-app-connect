@@ -97,6 +97,11 @@ class ConnectUser extends ConnectUserAbstract
 
     protected $user_type = ConnectUserPlugin::USER;
 
+    /**
+     * ConnectUser constructor.
+     * @param $connect_code
+     * @param $open_id
+     */
     public function __construct($connect_code, $open_id)
     {
         $plugin = new ConnectUserPlugin($connect_code);
@@ -110,6 +115,8 @@ class ConnectUser extends ConnectUserAbstract
 
     /**
      * 获取绑定的用户信息
+     * @param null $model
+     * @return bool
      */
     protected function buildUserInfo($model = null)
     {
@@ -229,44 +236,6 @@ class ConnectUser extends ConnectUserAbstract
     public function getConnectProfile()
     {
         return $this->profile;
-    }
-
-
-    protected static $userGenerateInstance;
-
-    /**
-     * Handle dynamic static method calls into the method.
-     *
-     * @param string $method
-     * @param array  $parameters
-     *
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        $user_generate_method = [
-            'getGenerateEmail',
-            'getGeneratePassword',
-            'getGenerateUserName',
-            'getUserHeaderImg',
-            'getUserName',
-            'setUserName',
-            'getIntegrateUser',
-            'getConnectPlugin',
-            'getPluginProfile',
-        ];
-
-        // Check for scope method and call
-        if (in_array($method, $user_generate_method)) {
-
-            if (is_null(self::$userGenerateInstance)) {
-                self::$userGenerateInstance = new UserGenerate($this);
-            }
-
-            return call_user_func_array([self::$userGenerateInstance, $method], $parameters);
-        }
-
-        return parent::__call($method, $parameters);
     }
 
 }
