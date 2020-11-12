@@ -137,27 +137,14 @@ class ConnectUser extends ConnectUserAbstract
     }
 
     /**
-     * @param integer $user_id
-     */
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
-
-        //获取用户信息
-        $this->buildUserInfo();
-
-        return $this;
-    }
-
-    /**
      * 检查当前connect_code用户是否绑定
      */
     public function checkUser()
     {
-        if (!empty($this->user_id)) {
-            return true;
+        if (empty($this->getUserModelByUserId())) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
