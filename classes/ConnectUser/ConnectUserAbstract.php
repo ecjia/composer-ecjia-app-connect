@@ -13,6 +13,21 @@ use Ecjia\App\Connect\Models\ConnectUserModel;
 use RC_Time;
 use Royalcms\Component\Support\Collection;
 
+/**
+ * Class ConnectUserAbstract
+ * @package Ecjia\App\Connect\ConnectUser
+ *
+ * @method string getConnectCode()
+ * @method ConnectUserPlugin setConnectCode($connect_code)
+ * @method string getConnectPlatform()
+ * @method ConnectUserPlugin setConnectPlatform(?string $connect_platform)
+ * @method string getOpenId()
+ * @method ConnectUserPlugin setOpenId(?string $open_id)
+ * @method string getUnionId()
+ * @method ConnectUserPlugin setUnionId(?string $union_id)
+ * @method string getUserType()
+ * @method ConnectUserPlugin setUserType(?string $user_type)
+ */
 abstract class ConnectUserAbstract
 {
 
@@ -42,6 +57,24 @@ abstract class ConnectUserAbstract
         $this->plugin = $plugin;
         $this->user_id = $user_id;
         $this->repository = new ConnectUserRepository();
+    }
+
+    /**
+     * @return ConnectUserPlugin
+     */
+    public function getPlugin(): ConnectUserPlugin
+    {
+        return $this->plugin;
+    }
+
+    /**
+     * @param ConnectUserPlugin $plugin
+     * @return ConnectUserAbstract
+     */
+    public function setPlugin(ConnectUserPlugin $plugin): ConnectUserAbstract
+    {
+        $this->plugin = $plugin;
+        return $this;
     }
 
     /**

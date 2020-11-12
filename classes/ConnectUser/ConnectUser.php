@@ -104,6 +104,7 @@ class ConnectUser extends ConnectUserAbstract
 
         parent::__construct($plugin);
 
+        //获取用户信息
         $this->buildUserInfo();
     }
 
@@ -133,6 +134,19 @@ class ConnectUser extends ConnectUserAbstract
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param integer $user_id
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+
+        //获取用户信息
+        $this->buildUserInfo();
+
+        return $this;
     }
 
     /**

@@ -79,7 +79,7 @@ class ConnectUserPlugin
      * @param string $connect_platform
      * @return ConnectUserPlugin
      */
-    public function setConnectPlatform(string $connect_platform): ConnectUserPlugin
+    public function setConnectPlatform(?string $connect_platform): ConnectUserPlugin
     {
         $this->connect_platform = $connect_platform;
         return $this;
@@ -97,7 +97,7 @@ class ConnectUserPlugin
      * @param string $open_id
      * @return ConnectUserPlugin
      */
-    public function setOpenId(string $open_id): ConnectUserPlugin
+    public function setOpenId(?string $open_id): ConnectUserPlugin
     {
         $this->open_id = $open_id;
         return $this;
@@ -115,7 +115,7 @@ class ConnectUserPlugin
      * @param string $union_id
      * @return ConnectUserPlugin
      */
-    public function setUnionId(string $union_id): ConnectUserPlugin
+    public function setUnionId(?string $union_id): ConnectUserPlugin
     {
         $this->union_id = $union_id;
         return $this;
@@ -133,7 +133,7 @@ class ConnectUserPlugin
      * @param string $user_type
      * @return ConnectUserPlugin
      */
-    public function setUserType(string $user_type): ConnectUserPlugin
+    public function setUserType(?string $user_type): ConnectUserPlugin
     {
         $this->user_type = $user_type;
         return $this;
