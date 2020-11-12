@@ -60,6 +60,19 @@ return array(
 	'copyright'     => 'ECJIA Copyright 2014 ~ 2019.',
     'namespace'     => 'Ecjia\App\Connect',
     'provider'      => 'ConnectServiceProvider',
+    'autoload'    => array(
+        'psr-4' => array(
+            "Ecjia\\App\\Connect\\" => "classes/"
+        )
+    ),
+    'discover' => array(
+        'providers' => array(
+            "Ecjia\\App\\Connect\\ConnectServiceProvider"
+        ),
+        'aliases' => [
+
+        ]
+    ),
 );
 
 // end
