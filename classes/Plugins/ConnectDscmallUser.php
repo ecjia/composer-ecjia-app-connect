@@ -15,7 +15,7 @@ class ConnectDscmallUser extends ConnectUser
      */
     public function __construct($open_id)
     {
-        parent::__construct('uc_dscmall', $open_id);
+        parent::__construct('dscmall', $open_id);
     }
 
 
