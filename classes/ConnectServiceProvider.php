@@ -13,6 +13,7 @@ use Ecjia\App\Connect\Services\ConnectPluginMenuService;
 use Ecjia\App\Connect\Services\ConnectPluginUninstallService;
 use Ecjia\App\Connect\Services\ConnectUpdateUserAvatarService;
 use Ecjia\App\Connect\Services\ConnectUserRemoveCleardataService;
+use Ecjia\App\Payment\PaymentPlugin;
 use ecjia_admin_log;
 use RC_Service;
 use Royalcms\Component\App\AppParentServiceProvider;
@@ -29,7 +30,19 @@ class ConnectServiceProvider extends  AppParentServiceProvider
     
     public function register()
     {
+        $this->registerConnectPlugin();
+
         $this->registerAppService();
+    }
+
+    /**
+     * Register the region
+     */
+    public function registerConnectPlugin()
+    {
+        $this->royalcms->singleton('ecjia.connect', function($royalcms){
+            return new ConnectPlugin();
+        });
     }
 
 
@@ -54,6 +67,15 @@ class ConnectServiceProvider extends  AppParentServiceProvider
     protected function assignAdminLogContent()
     {
         ecjia_admin_log::instance()->add_object('connect', __('帐号连接', 'connect'));
+    }
+
+    /**
+     * Load the alias = One less install step for the user
+     */
+    protected function loadAlias()
+    {
+        $loader = \Royalcms\Component\Foundation\AliasLoader::getInstance();
+        $loader->alias('ecjia_connect', 'Ecjia\App\Connect\Facades\Connect');
     }
     
 }
