@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: royalwang
- * Date: 2019/1/14
- * Time: 11:07
- */
 
 namespace Ecjia\App\Connect;
 
@@ -14,27 +8,11 @@ use RC_Format;
 
 trait UserGenerateTrait
 {
-
-//    /**
-//     * 用户操作对象
-//     * @var \Ecjia\App\Integrate\UserIntegrate
-//     */
-//    protected $integrate;
-
     /**
      * 用户名
      * @var string
      */
     protected $user_name;
-
-//
-//    protected $connect_user;
-//    protected $connect_code;
-
-//    public function __construct(ConnectUserAbstract $connect_user)
-//    {
-//        $this->connect_code = $connect_user->getConnectCode();
-//    }
 
     /**
      * @return ConnectAbstract
@@ -56,28 +34,14 @@ trait UserGenerateTrait
         return $profile;
     }
 
-//    /**
-//     * 创建会员整合操作对象
-//     * @return \Ecjia\App\Integrate\UserIntegrate
-//     */
-//    protected function cretateIntegrateUser()
-//    {
-//        $this->integrate = ecjia_integrate::init_users();
-//
-//        return $this->integrate;
-//    }
-
-//    /**
-//     * 获取会员整合操作对象
-//     * @return \Ecjia\App\Integrate\UserIntegrate
-//     */
-//    public function getIntegrateUser()
-//    {
-//        if (is_null($this->integrate)) {
-//            $this->cretateIntegrateUser();
-//        }
-//        return $this->integrate;
-//    }
+    /**
+     * 获取会员整合操作对象
+     * @return \Ecjia\App\Integrate\UserIntegrateAbstract
+     */
+    public function getIntegrateUser()
+    {
+        return ecjia_integrate::getInstance();
+    }
 
     /**
      * 设置用户名
