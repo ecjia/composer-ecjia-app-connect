@@ -20,11 +20,11 @@ class AdminHookSubscriber
         return $menus;
     }
 
-    public static function add_maintain_command($factories)
-    {
-        $factories['update_connect_platform'] = 'Ecjia\App\Connect\Maintains\UpdateConnectPlatform';
-        return $factories;
-    }
+//    public static function add_maintain_command($factories)
+//    {
+//        $factories['update_connect_platform'] = 'Ecjia\App\Connect\Maintains\UpdateConnectPlatform';
+//        return $factories;
+//    }
 
 
     /**
@@ -37,7 +37,7 @@ class AdminHookSubscriber
     {
 
         RC_Hook::add_filter('user_admin_menu_api', array(__CLASS__, 'connect_admin_menu_api') );
-        RC_Hook::add_action('ecjia_maintain_command_filter', array(__CLASS__, 'add_maintain_command'));
+//        RC_Hook::add_action('ecjia_maintain_command_filter', array(__CLASS__, 'add_maintain_command'));
 
     }
 
