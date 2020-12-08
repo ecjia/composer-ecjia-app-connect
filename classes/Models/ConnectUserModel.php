@@ -82,8 +82,27 @@ class ConnectUserModel extends Model
 	 * @var bool
 	 */
 	public $timestamps = false;
-	
-	
+
+
+    /**
+     * AttributeModel constructor.
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->connection = config('cashier.database_connection', 'default');
+
+        parent::__construct($attributes);
+    }
+
+    /**
+     * 一对一
+     * 关联账号对应用户信息
+     */
+    public function users_model()
+    {
+        return $this->hasOne('Ecjia\App\User\Models\UserModel', 'user_id', 'user_id');
+    }
 }
 
 // end
