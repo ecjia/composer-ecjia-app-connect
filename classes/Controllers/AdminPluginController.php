@@ -311,7 +311,10 @@ class AdminPluginController extends AdminBase
         $page                    = new ecjia_page($count, 10, 5);
 
         $arr  = array();
-        $data = $db->take(10)->skip($page->start_id - 1)->orderBy('connect_order', 'desc')->get();
+        $data = $db->take(10)
+                    ->skip($page->start_id - 1)
+                    ->orderBy('connect_order', 'desc')
+                    ->get()->toArray();
         if (isset($data)) {
             foreach ($data as $rows) {
                 $arr[] = $rows;

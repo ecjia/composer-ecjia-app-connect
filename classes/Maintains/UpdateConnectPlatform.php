@@ -84,7 +84,13 @@ class UpdateConnectPlatform extends AbstractCommand
         
         $size = 500;
         
-        $rows = RC_DB::table('connect_user')->where('connect_code', 'sns_wechat')->whereNull('union_id')->whereNotNull('open_id')->where('profile', '<>', 'N;')->take($size)->get();
+        $rows = RC_DB::table('connect_user')
+                    ->where('connect_code', 'sns_wechat')
+                    ->whereNull('union_id')
+                    ->whereNotNull('open_id')
+                    ->where('profile', '<>', 'N;')
+                    ->take($size)
+                    ->get()->toArray();
         if($rows) {
             foreach ($rows as $item) {
                 if(!empty($item['profile'])) {
