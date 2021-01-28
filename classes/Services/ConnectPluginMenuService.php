@@ -56,7 +56,7 @@ use RC_Uri;
 class ConnectPluginMenuService
 {
 
-    public function handle(& $options)
+    public function handle($options)
     {
         $menus = ecjia_admin::make_admin_menu('connect_list', __('账号连接', 'connect'), RC_Uri::url('connect/admin_plugin/init'), 1)->add_purview('connect_users_manage')->add_base('connect');
 

@@ -62,7 +62,7 @@ class ConnectConnectUserRemoveService
      * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
      * @return boolean | ecjia_error
      */
-    public function handle(& $options)
+    public function handle($options)
     {
         if (!array_get($options, 'user_id')) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));

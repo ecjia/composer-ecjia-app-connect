@@ -57,7 +57,7 @@ class ConnectAdminPurviewService
      * @param $options
      * @return array
      */
-    public function handle(& $options)
+    public function handle($options)
     {
         $purviews = array(
             array('action_name' => __('账号连接', 'connect'), 'action_code' => 'connect_users_manage', 'relevance' => ''),

@@ -63,7 +63,7 @@ class ConnectConnectUserService
      * @see Component_Event_Api::call()
      * @return \Ecjia\App\Connect\ConnectUser\ConnectUser | ecjia_error
      */
-    public function handle(& $options)
+    public function handle($options)
     {
         if (!array_get($options, 'connect_code') || !array_get($options, 'open_id')) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'connect'), __CLASS__));

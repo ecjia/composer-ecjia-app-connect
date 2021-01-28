@@ -57,7 +57,7 @@ use ecjia_error;
 class ConnectUserRemoveCleardataService
 {
 
-    public function handle(& $options)
+    public function handle($options)
     {
 
         $user_id = array_get($options, 'user_id');

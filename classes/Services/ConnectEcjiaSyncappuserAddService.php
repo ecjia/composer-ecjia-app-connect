@@ -67,7 +67,7 @@ class ConnectEcjiaSyncappuserAddService
      * @param string user_type     用户类型，选填，默认user，user:普通用户，merchant:商家，admin:管理员
      * @return true | ecjia_error
      */
-    public function handle(& $options)
+    public function handle($options)
     {
         if (!array_get($options, 'connect_code')
             || !array_get($options, 'open_id')
