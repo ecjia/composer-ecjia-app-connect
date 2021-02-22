@@ -48,5 +48,16 @@
 
 //第三方平台code
 
-return ['sns_wechat', 'sns_wechat_shop', 'sns_wechat_bbc', 'sns_wechat_app', 'sns_wechat_weapp', 'sns_wechat_pc', 'sns_qq', 'sns_qq_app', 'sns_qq_bbc', 'sns_qq_shop'];
+return [
+    'sns_wechat',
+    'sns_wechat_shop',
+    'sns_wechat_bbc',
+    'sns_wechat_app',
+    'sns_wechat_weapp',
+    'sns_wechat_pc',
+    'sns_qq',
+    'sns_qq_app',
+    'sns_qq_bbc',
+    'sns_qq_shop'
+];
 

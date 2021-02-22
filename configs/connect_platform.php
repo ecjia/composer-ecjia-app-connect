@@ -48,48 +48,48 @@
 
 //第三方平台
 return array(
-	'wechat' => array(
-					[
-						"connect_code" => "sns_wechat",
-						"connect_name" => "到家h5",
-					],
-					[
-						"connect_code" => "sns_wechat_shop",
-						"connect_name" => "到家门店APP",
-					],
-					[
-						"connect_code" => "sns_wechat_bbc",
-						"connect_name" => "到家商城APP",
-					],
-					[
-						"connect_code" => "sns_wechat_app",
-						"connect_name" => "到家APP",
-					],
-					[
-						"connect_code" => "sns_wechat_weapp",
-						"connect_name" => "到家门店小程序",
-					],
-					[
-						"connect_code" => "sns_wechat_pc",
-						"connect_name" => "到家PC",
-					],
-				),
-	'qq' => array(
-					[
-						"connect_code" => "sns_qq",
-						"connect_name" => "到家h5",
-					],
-					[
-						"connect_code" => "sns_qq_app",
-						"connect_name" => "到家APP",
-					],
-					[
-						"connect_code" => "sns_qq_bbc",
-						"connect_name" => "到家商城APP",
-					],
-					[
-						"connect_code" => "sns_qq_shop",
-						"connect_name" => "到家门店APP",
-					],
-				),
+    'wechat' => array(
+        [
+            "connect_code" => "sns_wechat",
+            "connect_name" => "到家h5",
+        ],
+        [
+            "connect_code" => "sns_wechat_shop",
+            "connect_name" => "到家门店APP",
+        ],
+        [
+            "connect_code" => "sns_wechat_bbc",
+            "connect_name" => "到家商城APP",
+        ],
+        [
+            "connect_code" => "sns_wechat_app",
+            "connect_name" => "到家APP",
+        ],
+        [
+            "connect_code" => "sns_wechat_weapp",
+            "connect_name" => "到家门店小程序",
+        ],
+        [
+            "connect_code" => "sns_wechat_pc",
+            "connect_name" => "到家PC",
+        ],
+    ),
+    'qq'     => array(
+        [
+            "connect_code" => "sns_qq",
+            "connect_name" => "到家h5",
+        ],
+        [
+            "connect_code" => "sns_qq_app",
+            "connect_name" => "到家APP",
+        ],
+        [
+            "connect_code" => "sns_qq_bbc",
+            "connect_name" => "到家商城APP",
+        ],
+        [
+            "connect_code" => "sns_qq_shop",
+            "connect_name" => "到家门店APP",
+        ],
+    ),
 );
